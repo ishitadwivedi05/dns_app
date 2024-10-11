@@ -1,0 +1,104 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-server
+  template:
+    metadata:
+      labels:
+        app: user-server
+    spec:
+      containers:
+      - name: user-server
+        image: ishitadwivedi/us:latest
+        ports:
+        - containerPort: 8080
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fibonacci-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fibonacci-server
+  template:
+    metadata:
+      labels:
+        app: fibonacci-server
+    spec:
+      containers:
+      - name: fibonacci-server
+        image: ishitadwivedi/fs:latest
+        ports:
+        - containerPort: 9090
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: authoritative-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: authoritative-server
+  template:
+    metadata:
+      labels:
+        app: authoritative-server
+    spec:
+      containers:
+      - name: authoritative-server
+        image: ishitadwivedi/as:latest
+        ports:
+        - containerPort: 53533
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-server
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 8080
+    targetPort: 8080
+    nodePort: 30001
+  selector:
+    app: user-server
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fibonacci-server
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 9090
+    targetPort: 9090
+    nodePort: 30002
+  selector:
+    app: fibonacci-server
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: authoritative-server
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 53533
+    targetPort: 53533
+    nodePort: 30003
+    protocol: UDP
+  selector:
+    app: authoritative-server
